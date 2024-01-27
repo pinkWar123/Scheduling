@@ -5,7 +5,7 @@ void RoundRobin::Run()
     int currentTime = 0;
     int count = 0;
     bool allProcessesCompleted = false;
-
+    bool AddIntoQueue = false;
     while (true)
     {
         // Arrival time check and process queueing
@@ -20,6 +20,12 @@ void RoundRobin::Run()
             }
             else
                 ++i;
+        }
+        if(AddIntoQueue)
+        {
+            AddIntoQueue = false;
+            cpuQueue.push(cpuQueue.front());
+            cpuQueue.pop();
         }
         int CurrentID = -1;
         if (!cpuQueue.empty())
@@ -39,8 +45,7 @@ void RoundRobin::Run()
             }
             else if (count == time_quantum)
             {
-                cpuQueue.pop();
-                cpuQueue.push(temp);
+                AddIntoQueue = true;
                 count = 0;
             }
             CPUsheduling.push_back(temp.ID);
