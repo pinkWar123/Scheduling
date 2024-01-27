@@ -1,5 +1,6 @@
+#pragma once
 #include "SchedulingAlgorithm.h"
-
+#include <algorithm>
 class SRTN : public Scheduling
 {
 public:

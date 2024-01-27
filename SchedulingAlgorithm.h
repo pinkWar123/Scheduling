@@ -50,6 +50,16 @@ public:
             // process[i].WaitTime = total;
         }
     }
+
+    void UpdateWaitingTime()
+    {
+        for (int i = 1; i < cpuQueue.size(); i++)
+        {
+            int id = cpuQueue[i].ID;
+            process[id - 1].WaitTime++;
+        }
+    }
+
     void WriteIntoFile(const char *filename)
     {
         CalculateTime();
