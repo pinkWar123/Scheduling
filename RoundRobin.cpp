@@ -26,7 +26,6 @@ void RoundRobin::Run()
         if (!cpuQueue.empty())
         {
             Process &temp = cpuQueue.front();
-            --temp.CPUBurstTime[0];
 
             if (temp.CPUBurstTime[0] <= 0)
             {
@@ -40,6 +39,7 @@ void RoundRobin::Run()
             }
             else
             {
+                --temp.CPUBurstTime[0];
                 ++count;
                 if (count == time_quantum)
                 {
@@ -60,7 +60,6 @@ void RoundRobin::Run()
         if (!ioQueue.empty())
         {
             Process &temp = ioQueue.front();
-            --temp.ResourceBurstTime[0];
 
             if (temp.ResourceBurstTime[0] <= 0)
             {
@@ -73,6 +72,7 @@ void RoundRobin::Run()
             }
             else
             {
+                --temp.ResourceBurstTime[0];
                 Resourcesheduling.push_back(temp.ID);
             }
         }
