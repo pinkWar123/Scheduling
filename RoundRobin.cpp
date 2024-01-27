@@ -48,12 +48,12 @@ void RoundRobin::Run()
                     count = 0;
                 }
 
-                CPUsheduling.push_back(temp.ID);
+                CPUScheduling.push_back(temp.ID);
             }
         }
         else
         {
-            CPUsheduling.push_back(-1);
+            CPUScheduling.push_back(-1);
         }
 
         // I/O Queue handling
@@ -73,12 +73,12 @@ void RoundRobin::Run()
             else
             {
                 --temp.ResourceBurstTime[0];
-                Resourcesheduling.push_back(temp.ID);
+                ResourceScheduling.push_back(temp.ID);
             }
         }
         else
         {
-            Resourcesheduling.push_back(-1);
+            ResourceScheduling.push_back(-1);
         }
 
         // Check if all processes are done

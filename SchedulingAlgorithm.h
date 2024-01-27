@@ -8,7 +8,7 @@
 #include "Data.h"
 using namespace std;
 
-class Sheduling
+class Scheduling
 {
 protected:
     vector<Process> process;
@@ -16,33 +16,33 @@ protected:
     queue<Process> cpuQueue;
     queue<Process> ioQueue;
 
-    vector<int> CPUsheduling;
-    vector<int> Resourcesheduling;
+    vector<int> CPUScheduling;
+    vector<int> ResourceScheduling;
 
 public:
-    Sheduling(vector<Process> p)
+    Scheduling(vector<Process> p)
     {
         this->process = p;
     }
     void WriteIntoFile(const char *filename)
     {
         ofstream os(filename);
-        for (int i = 0; i < CPUsheduling.size(); i++)
+        for (int i = 0; i < CPUScheduling.size(); i++)
         {
-            if (CPUsheduling[i] == -1)
+            if (CPUScheduling[i] == -1)
                 os << "_";
             else
-                os << CPUsheduling[i];
+                os << CPUScheduling[i];
 
             os << " ";
         }
         os << endl;
-        for (int i = 0; i < Resourcesheduling.size(); i++)
+        for (int i = 0; i < ResourceScheduling.size(); i++)
         {
-            if (Resourcesheduling[i] == -1)
+            if (ResourceScheduling[i] == -1)
                 os << "_";
             else
-                os << Resourcesheduling[i];
+                os << ResourceScheduling[i];
 
             os << " ";
         }
