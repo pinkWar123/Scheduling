@@ -7,7 +7,6 @@ void FCFS::Run()
     int time = 0;
     while (true)
     {
-        std::cout << process.size() << ' ' << ioQueue.size() << ' ' << cpuQueue.size() << endl;
         if (process.empty() && ioQueue.empty() && cpuQueue.empty())
             break;
         for (int i = 0; i < process.size(); i++)
@@ -22,7 +21,6 @@ void FCFS::Run()
         if (!cpuQueue.empty())
         {
             Process &temp = cpuQueue.front();
-            // cout << temp.CPUBurstTime[0] << endl;
             temp.CPUBurstTime[0]--;
 
             if (temp.CPUBurstTime[0] <= 0)
@@ -34,7 +32,10 @@ void FCFS::Run()
                 }
                 cpuQueue.pop();
             }
-            CPUScheduling.push_back(temp.ID);
+            if (!cpuQueue.empty())
+                CPUScheduling.push_back(cpuQueue.front().ID);
+            else
+                CPUScheduling.push_back(-1);
         }
         else
             CPUScheduling.push_back(-1);
@@ -42,7 +43,6 @@ void FCFS::Run()
         if (!ioQueue.empty())
         {
             Process &temp = ioQueue.front();
-            // cout << temp.ResourceBurstTime[0] << endl;
             temp.ResourceBurstTime[0]--;
             if (temp.ResourceBurstTime[0] <= 0)
             {
@@ -53,7 +53,10 @@ void FCFS::Run()
                 }
                 ioQueue.pop();
             }
-            ResourceScheduling.push_back(temp.ID);
+            if (!ioQueue.empty())
+                ResourceScheduling.push_back(ioQueue.front().ID);
+            else
+                ResourceScheduling.push_back(-1);
         }
         else
             ResourceScheduling.push_back(-1);
