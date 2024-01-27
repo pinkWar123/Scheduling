@@ -1,6 +1,7 @@
+#pragma once
 #include "ShedulingAlgorithm.h"
 
-class RoundRobin : Sheduling
+class RoundRobin : public Sheduling
 {
 private:
     int time_quantum;
