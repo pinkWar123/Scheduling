@@ -21,72 +21,59 @@ void RoundRobin::Run()
             else
                 ++i;
         }
-
-        // CPU Queue handling
+        int CurrentID = -1;
         if (!cpuQueue.empty())
         {
             Process &temp = cpuQueue.front();
+            CurrentID = temp.ID;
+            ++count;
+            --temp.CPUBurstTime[0];
 
             if (temp.CPUBurstTime[0] <= 0)
             {
                 temp.CPUBurstTime.erase(temp.CPUBurstTime.begin());
-
                 if (!temp.ResourceBurstTime.empty())
                     ioQueue.push(temp);
-
-                cpuQueue.pop(); 
+                cpuQueue.pop();
                 count = 0;
             }
-            else
+            else if (count == time_quantum)
             {
-                --temp.CPUBurstTime[0];
-                ++count;
-                if (count == time_quantum)
-                {
-                    cpuQueue.pop(); 
-                    cpuQueue.push(temp);
-                    count = 0;
-                }
-
-                CPUsheduling.push_back(temp.ID);
+                cpuQueue.pop();
+                cpuQueue.push(temp);
+                count = 0;
             }
+            CPUsheduling.push_back(temp.ID);
         }
         else
-        {
             CPUsheduling.push_back(-1);
-        }
 
-        // I/O Queue handling
         if (!ioQueue.empty())
         {
             Process &temp = ioQueue.front();
-
+            if(CurrentID == temp.ID)
+            {
+                Resourcesheduling.push_back(-1);
+                currentTime++;
+                continue;
+            }
+            --temp.ResourceBurstTime[0];
             if (temp.ResourceBurstTime[0] <= 0)
             {
                 temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
-
                 if (!temp.CPUBurstTime.empty())
                     cpuQueue.push(temp);
-
-                ioQueue.pop(); 
+                
+                ioQueue.pop();
             }
-            else
-            {
-                --temp.ResourceBurstTime[0];
-                Resourcesheduling.push_back(temp.ID);
-            }
+            Resourcesheduling.push_back(temp.ID);
         }
         else
-        {
             Resourcesheduling.push_back(-1);
-        }
-
-        // Check if all processes are done
-        if (allProcessesCompleted && cpuQueue.empty() && ioQueue.empty())
-        {
+        
+        if(allProcessesCompleted && cpuQueue.empty() && ioQueue.empty())
             break;
-        }
-
-        ++currentTime;
+        
+        currentTime++;
     }
 }
