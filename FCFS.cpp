@@ -21,6 +21,11 @@ void FCFS::Run()
         int CurrentID = -1;
         if (!cpuQueue.empty())
         {
+            for (int i = 1; i < cpuQueue.size(); i++)
+            {
+                int id = cpuQueue[i].ID;
+                process[id - 1].WaitTime++;
+            }
             Process &temp = cpuQueue.front();
             --temp.CPUBurstTime[0];
             CPUScheduling.push_back(temp.ID);

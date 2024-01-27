@@ -43,12 +43,11 @@ public:
             }
 
             int total = 0;
-            for(int j = 0; j < process[i].CPUBurstTime.size(); j++)
-            {
-                total += process[i].CPUBurstTime[j];
-            }
+            for (int j = process[i].ArrivalTime; j < CPUScheduling.size(); j++)
+                if (CPUScheduling[j] != process[i].ID)
+                    ++total;
             process[i].turnArroundTime = max(timeCompleted1, timeCompleted2) - process[i].ArrivalTime + 1;
-            process[i].WaitTime = process[i].turnArroundTime - total;
+            // process[i].WaitTime = total;
         }
     }
     void WriteIntoFile(const char *filename)
@@ -75,12 +74,12 @@ public:
             os << " ";
         }
         os << endl;
-        for(int i = 0; i < process.size(); i++)
+        for (int i = 0; i < process.size(); i++)
         {
             os << process[i].turnArroundTime << " ";
         }
         os << endl;
-        for(int i = 0; i < process.size(); i++)
+        for (int i = 0; i < process.size(); i++)
         {
             os << process[i].WaitTime << " ";
         }
