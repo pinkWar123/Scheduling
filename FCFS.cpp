@@ -1,54 +1,39 @@
-#include "RoundRobin.h"
+#include "FCFS.h"
+#include <iostream>
 
-void RoundRobin::Run()
+FCFS::FCFS(Data &d) : Scheduling(d.getProcess()) {}
+
+void FCFS::Run()
 {
-    int currentTime = 0;
-    int count = 0;
-    bool allProcessesCompleted = false;
-    bool AddIntoQueue = false;
+    int time = 0;
     vector<Process> tempProcesses = process;
     while (true)
     {
-        // Arrival time check and process queueing
-        for (int i = 0; i < tempProcesses.size();)
+        // std::cout << process.size() << ' ' << ioQueue.size() << ' ' << cpuQueue.size() << endl;
+        for (int i = 0; i < tempProcesses.size(); i++)
         {
-            if (tempProcesses[i].ArrivalTime == currentTime)
+            if (tempProcesses[i].ArrivalTime == time)
             {
                 cpuQueue.push_back(tempProcesses[i]);
                 tempProcesses.erase(tempProcesses.begin() + i);
-                if (tempProcesses.empty())
-                    allProcessesCompleted = true;
+                --i;
             }
-            else
-                ++i;
-        }
-        if(AddIntoQueue)
-        {
-            AddIntoQueue = false;
-            cpuQueue.push_back(cpuQueue.front());
-            cpuQueue.erase(cpuQueue.begin());;
         }
         int CurrentID = -1;
         if (!cpuQueue.empty())
         {
             Process &temp = cpuQueue.front();
-            CurrentID = temp.ID;
-            ++count;
             --temp.CPUBurstTime[0];
             CPUScheduling.push_back(temp.ID);
-
+            CurrentID = temp.ID;
             if (temp.CPUBurstTime[0] <= 0)
             {
                 temp.CPUBurstTime.erase(temp.CPUBurstTime.begin());
                 if (!temp.ResourceBurstTime.empty())
+                {
                     ioQueue.push_back(temp);
+                }
                 cpuQueue.erase(cpuQueue.begin());
-                count = 0;
-            }
-            else if (count == time_quantum)
-            {
-                AddIntoQueue = true;
-                count = 0;
             }
         }
         else
@@ -60,26 +45,26 @@ void RoundRobin::Run()
             if (CurrentID == temp.ID)
             {
                 ResourceScheduling.push_back(-1);
-                currentTime++;
+                time++;
                 continue;
             }
-            --temp.ResourceBurstTime[0];
+            temp.ResourceBurstTime[0]--;
             ResourceScheduling.push_back(temp.ID);
+
             if (temp.ResourceBurstTime[0] <= 0)
             {
                 temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
                 if (!temp.CPUBurstTime.empty())
+                {
                     cpuQueue.push_back(temp);
-
+                }
                 ioQueue.erase(ioQueue.begin());
             }
         }
         else
             ResourceScheduling.push_back(-1);
-
-        if (allProcessesCompleted && cpuQueue.empty() && ioQueue.empty())
+        if (tempProcesses.empty() && ioQueue.empty() && cpuQueue.empty())
             break;
-
-        currentTime++;
+        ++time;
     }
 }
