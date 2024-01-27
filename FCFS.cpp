@@ -1,41 +1,39 @@
 #include "FCFS.h"
 #include <iostream>
+
 FCFS::FCFS(Data &d) : Scheduling(d.getProcess()) {}
 
 void FCFS::Run()
 {
     int time = 0;
+    vector<Process> tempProcesses = process;
     while (true)
     {
-        if (process.empty() && ioQueue.empty() && cpuQueue.empty())
-            break;
-        for (int i = 0; i < process.size(); i++)
+        for (int i = 0; i < tempProcesses.size(); i++)
         {
-            if (process[i].ArrivalTime == time)
+            if (tempProcesses[i].ArrivalTime == time)
             {
-                cpuQueue.push(process[i]);
-                process.erase(process.begin() + i);
+                cpuQueue.push_back(tempProcesses[i]);
+                tempProcesses.erase(tempProcesses.begin() + i);
                 --i;
             }
         }
+        int CurrentID = -1;
         if (!cpuQueue.empty())
         {
             Process &temp = cpuQueue.front();
-            temp.CPUBurstTime[0]--;
-
+            --temp.CPUBurstTime[0];
+            CPUScheduling.push_back(temp.ID);
+            CurrentID = temp.ID;
             if (temp.CPUBurstTime[0] <= 0)
             {
                 temp.CPUBurstTime.erase(temp.CPUBurstTime.begin());
                 if (!temp.ResourceBurstTime.empty())
                 {
-                    ioQueue.push(temp);
+                    ioQueue.push_back(temp);
                 }
-                cpuQueue.pop();
+                cpuQueue.erase(cpuQueue.begin());
             }
-            if (!cpuQueue.empty())
-                CPUScheduling.push_back(cpuQueue.front().ID);
-            else
-                CPUScheduling.push_back(-1);
         }
         else
             CPUScheduling.push_back(-1);
@@ -43,24 +41,29 @@ void FCFS::Run()
         if (!ioQueue.empty())
         {
             Process &temp = ioQueue.front();
+            if (CurrentID == temp.ID)
+            {
+                ResourceScheduling.push_back(-1);
+                time++;
+                continue;
+            }
             temp.ResourceBurstTime[0]--;
+            ResourceScheduling.push_back(temp.ID);
+
             if (temp.ResourceBurstTime[0] <= 0)
             {
                 temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
                 if (!temp.CPUBurstTime.empty())
                 {
-                    cpuQueue.push(temp);
+                    cpuQueue.push_back(temp);
                 }
-                ioQueue.pop();
+                ioQueue.erase(ioQueue.begin());
             }
-            if (!ioQueue.empty())
-                ResourceScheduling.push_back(ioQueue.front().ID);
-            else
-                ResourceScheduling.push_back(-1);
         }
         else
             ResourceScheduling.push_back(-1);
-
+        if (tempProcesses.empty() && ioQueue.empty() && cpuQueue.empty())
+            break;
         ++time;
     }
 }

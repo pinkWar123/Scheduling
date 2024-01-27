@@ -3,6 +3,7 @@
 #include "Data.h"
 #include "RoundRobin.h"
 #include "FCFS.h"
+#include "SJF.h"
 using namespace std;
 
 int main(int argc, char **argv)
@@ -12,8 +13,9 @@ int main(int argc, char **argv)
     else
     {
         Data d(argv[1]);
-        // RoundRobin r(d);
+         //RoundRobin r(d);
         FCFS r(d);
+        //SJF r(d);
         r.Run();
         r.WriteIntoFile(argv[2]);
     }
