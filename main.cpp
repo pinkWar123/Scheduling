@@ -14,6 +14,7 @@ int main(int argc, char **argv)
     else
     {
         Data d(argv[1]);
+        // FCFS r(d);
         // RoundRobin r(d);
         SRTN r(d);
         // SJF r(d);

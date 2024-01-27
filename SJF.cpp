@@ -85,7 +85,7 @@ void SJF::Run()
         else
             ResourceScheduling.push_back(-1);
 
-        if (tempProcesses.empty() && cpuQueue.empty() && ioQueue.empty())
+        if (hasAllProcessesCompleted(tempProcesses))
             break;
         currentTime++;
     }
