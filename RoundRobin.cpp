@@ -4,7 +4,6 @@ void RoundRobin::Run()
 {
     int currentTime = 0;
     int count = 0;
-    bool allProcessesCompleted = false;
     bool AddIntoQueue = false;
     vector<Process> tempProcesses = process;
     while (true)
@@ -16,17 +15,16 @@ void RoundRobin::Run()
             {
                 cpuQueue.push_back(tempProcesses[i]);
                 tempProcesses.erase(tempProcesses.begin() + i);
-                if (tempProcesses.empty())
-                    allProcessesCompleted = true;
             }
             else
                 ++i;
         }
-        if(AddIntoQueue)
+        if (AddIntoQueue)
         {
             AddIntoQueue = false;
             cpuQueue.push_back(cpuQueue.front());
-            cpuQueue.erase(cpuQueue.begin());;
+            cpuQueue.erase(cpuQueue.begin());
+            ;
         }
         int CurrentID = -1;
         if (!cpuQueue.empty())
@@ -77,7 +75,7 @@ void RoundRobin::Run()
         else
             ResourceScheduling.push_back(-1);
 
-        if (allProcessesCompleted && cpuQueue.empty() && ioQueue.empty())
+        if (hasAllProcessesCompleted(tempProcesses))
             break;
 
         currentTime++;

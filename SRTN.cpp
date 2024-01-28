@@ -10,15 +10,7 @@ void SRTN::Run()
     vector<Process> tempProcesses = process;
     while (true)
     {
-        for (int i = 0; i < tempProcesses.size(); i++)
-        {
-            if (tempProcesses[i].ArrivalTime == time)
-            {
-                cpuQueue.push_back(tempProcesses[i]);
-                tempProcesses.erase(tempProcesses.begin() + i);
-                --i;
-            }
-        }
+        UpdateCPUQueue(tempProcesses, time);
 
         int CurrentID = -1;
 
@@ -50,32 +42,10 @@ void SRTN::Run()
         else
             CPUScheduling.push_back(-1);
 
-        if (!ioQueue.empty())
-        {
-            Process &temp = ioQueue.front();
-            if (CurrentID == temp.ID)
-            {
-                ResourceScheduling.push_back(-1);
-                time++;
-                continue;
-            }
-            temp.ResourceBurstTime[0]--;
-            ResourceScheduling.push_back(temp.ID);
-
-            if (temp.ResourceBurstTime[0] <= 0)
-            {
-                temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
-                if (!temp.CPUBurstTime.empty())
-                {
-                    cpuQueue.push_back(temp);
-                }
-                ioQueue.erase(ioQueue.begin());
-            }
-        }
-        else
-            ResourceScheduling.push_back(-1);
-        if (tempProcesses.empty() && ioQueue.empty() && cpuQueue.empty())
+        bool flag = UpdateIOQueue(CurrentID, time);
+        if (hasAllProcessesCompleted(tempProcesses))
             break;
-        ++time;
+        if (flag)
+            ++time;
     }
 }

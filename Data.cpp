@@ -1,5 +1,15 @@
 #include "Data.h"
 
+Data::Data() {}
+
+vector<Process> Data::getProcess()
+{
+    return process;
+}
+
+int Data::getType() { return Type; }
+int Data::getTime_quantum() { return time_quantum; }
+
 Data::Data(char *inputFile)
 {
     loadfromFile(inputFile);
