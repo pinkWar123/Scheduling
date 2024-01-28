@@ -14,12 +14,26 @@ int main(int argc, char **argv)
     else
     {
         Data d(argv[1]);
-        // FCFS r(d);
-        // RoundRobin r(d);
-        SRTN r(d);
-        // SJF r(d);
-        r.Run();
-        r.WriteIntoFile(argv[2]);
+        int type = d.getType();
+        Scheduling *algo;
+        switch (type)
+        {
+        case 1:
+            algo = new FCFS(d);
+            break;
+        case 2:
+            algo = new RoundRobin(d);
+            break;
+        case 3:
+            algo = new SJF(d);
+            break;
+        case 4:
+            algo = new SRTN(d);
+            break;
+        }
+        algo->Run();
+        algo->WriteIntoFile(argv[2]);
+        delete algo;
     }
     return 0;
 }

@@ -10,26 +10,17 @@ class Data
 {
 private:
     int Type;
-    int time_quantum; // this is used for Schedule Round Robin 
+    int time_quantum; // this is used for Schedule Round Robin
     vector<Process> process;
 
     // Private functions
-    bool loadfromFile(char* inputFile);
+    bool loadfromFile(char *inputFile);
 
-public: 
-    Data(){}
-    Data(char* inputfile);
+public:
+    Data();
+    Data(char *inputfile);
 
-    vector<Process> getProcess()
-    {
-        return process; 
-    }
-    int getType()
-    {
-        return Type;
-    }
-    int getTime_quantum()
-    {
-        return time_quantum;
-    }
+    vector<Process> getProcess();
+    int getType();
+    int getTime_quantum();
 };
