@@ -11,7 +11,7 @@ void SJF::InsertProcessIntoQueue(Process &other)
     }
 
     auto it = cpuQueue.begin();
-    while (it != cpuQueue.end() && other.CPUBurstTime[0] > it->CPUBurstTime[0])
+    while (it != cpuQueue.end() && other.CPUBurstTime[0] >= it->CPUBurstTime[0])
     {
         ++it;
     }
@@ -29,7 +29,7 @@ void SJF::Run()
         {
             if (tempProcesses[i].ArrivalTime == currentTime)
             {
-                InsertProcessIntoQueue(tempProcesses[i]);
+                ReadyQueue.push_back(tempProcesses[i]);
                 tempProcesses.erase(tempProcesses.begin() + i);
             }
             else

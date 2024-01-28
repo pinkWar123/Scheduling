@@ -14,7 +14,7 @@ void RoundRobin::Run()
         {
             if (tempProcesses[i].ArrivalTime == currentTime)
             {
-                cpuQueue.push_back(tempProcesses[i]);
+                ReadyQueue.push_back(tempProcesses[i]);
                 tempProcesses.erase(tempProcesses.begin() + i);
             }
             else
