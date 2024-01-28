@@ -6,6 +6,7 @@ void RoundRobin::Run()
     int count = 0;
     bool AddIntoQueue = false;
     vector<Process> tempProcesses = process;
+    vector<Process> ReadyQueue;
     while (true)
     {
         // Arrival time check and process queueing
@@ -19,16 +20,20 @@ void RoundRobin::Run()
             else
                 ++i;
         }
-        if (AddIntoQueue)
+        if (!ReadyQueue.empty())
         {
-            AddIntoQueue = false;
-            cpuQueue.push_back(cpuQueue.front());
-            cpuQueue.erase(cpuQueue.begin());
-            ;
+            SortReadyQueue();
+            for (int i = 0; i < ReadyQueue.size(); i++)
+            {
+                cpuQueue.push_back(ReadyQueue[i]);
+            }
+            ReadyQueue.clear();
         }
+
         int CurrentID = -1;
         if (!cpuQueue.empty())
         {
+            UpdateWaitingTime();
             Process &temp = cpuQueue.front();
             CurrentID = temp.ID;
             ++count;
@@ -45,7 +50,9 @@ void RoundRobin::Run()
             }
             else if (count == time_quantum)
             {
-                AddIntoQueue = true;
+                Process p = temp;
+                ReadyQueue.push_back(p);
+                cpuQueue.erase(cpuQueue.begin());
                 count = 0;
             }
         }
@@ -67,7 +74,10 @@ void RoundRobin::Run()
             {
                 temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
                 if (!temp.CPUBurstTime.empty())
-                    cpuQueue.push_back(temp);
+                {
+                    Process p = temp;
+                    ReadyQueue.push_back(p);
+                }
 
                 ioQueue.erase(ioQueue.begin());
             }
@@ -75,7 +85,7 @@ void RoundRobin::Run()
         else
             ResourceScheduling.push_back(-1);
 
-        if (hasAllProcessesCompleted(tempProcesses))
+        if (hasAllProcessesCompleted(tempProcesses) && ReadyQueue.empty())
             break;
 
         currentTime++;

@@ -19,6 +19,8 @@ protected:
     vector<int> CPUScheduling;
     vector<int> ResourceScheduling;
 
+    vector<Process> ReadyQueue;
+
 public:
     Scheduling();
     Scheduling(vector<Process> p);
@@ -28,6 +30,7 @@ public:
     void UpdateCPUQueue(vector<Process> &p, int time);
     bool UpdateIOQueue(int currentId, int &time);
     bool hasAllProcessesCompleted(vector<Process> &p);
+    void SortReadyQueue();
 
     void WriteIntoFile(const char *filename);
     virtual void Run() = 0;

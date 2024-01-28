@@ -1,3 +1,4 @@
+#pragma once
 #include "SchedulingAlgorithm.h"
 
 class SJF : public Scheduling

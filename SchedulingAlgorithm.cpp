@@ -57,7 +57,19 @@ void Scheduling::UpdateCPUQueue(vector<Process> &tempProcesses, int time)
         }
     }
 }
-
+void Scheduling::SortReadyQueue()
+{
+    for (int i = 0; i < ReadyQueue.size(); i++)
+    {
+        for (int j = 0; j < ReadyQueue.size(); j++)
+        {
+            if (ReadyQueue[i].ArrivalTime < ReadyQueue[j].ArrivalTime)
+            {
+                swap(ReadyQueue[i], ReadyQueue[j]);
+            }
+        }
+    }
+}
 bool Scheduling::UpdateIOQueue(int CurrentID, int &time)
 {
     if (!ioQueue.empty())

@@ -9,27 +9,22 @@ void SJF::InsertProcessIntoQueue(Process &other)
         cpuQueue.push_back(other);
         return;
     }
-    bool flag = true;
-    for (int i = 0; i < cpuQueue.size() - 1; i++)
-    {
-        if (other.CPUBurstTime[0] >= cpuQueue[i].CPUBurstTime[0] && other.CPUBurstTime[0] <= cpuQueue[i + 1].CPUBurstTime[0])
-        {
-            flag = false;
-            cpuQueue.insert(cpuQueue.begin() + i + 1, other);
-            break;
-        }
-    }
-    if (flag)
-        cpuQueue.push_back(other);
-}
 
+    auto it = cpuQueue.begin();
+    while (it != cpuQueue.end() && other.CPUBurstTime[0] > it->CPUBurstTime[0])
+    {
+        ++it;
+    }
+
+    cpuQueue.insert(it, other);
+}
 void SJF::Run()
 {
     int currentTime = 0;
     vector<Process> tempProcesses = process;
+    vector<Process> ReadyQueue;
     while (true)
     {
-        // Chèn các tiến trình mới đến vào hàng đợi CPU
         for (int i = 0; i < tempProcesses.size();)
         {
             if (tempProcesses[i].ArrivalTime == currentTime)
@@ -41,9 +36,20 @@ void SJF::Run()
                 ++i;
         }
 
+        if (!ReadyQueue.empty())
+        {
+            SortReadyQueue();
+            for (int i = 0; i < ReadyQueue.size(); i++)
+            {
+                InsertProcessIntoQueue(ReadyQueue[i]);
+            }
+            ReadyQueue.clear();
+        }
+
         int CurrentID = -1;
         if (!cpuQueue.empty())
         {
+            UpdateWaitingTime();
             Process &temp = cpuQueue.front();
             CurrentID = temp.ID;
             --temp.CPUBurstTime[0];
@@ -77,7 +83,8 @@ void SJF::Run()
                 temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
                 if (!temp.CPUBurstTime.empty())
                 {
-                    InsertProcessIntoQueue(temp);
+                    Process p = temp;
+                    ReadyQueue.push_back(p);
                 }
                 ioQueue.erase(ioQueue.begin());
             }
@@ -85,7 +92,7 @@ void SJF::Run()
         else
             ResourceScheduling.push_back(-1);
 
-        if (hasAllProcessesCompleted(tempProcesses))
+        if (hasAllProcessesCompleted(tempProcesses) && ReadyQueue.empty())
             break;
         currentTime++;
     }
