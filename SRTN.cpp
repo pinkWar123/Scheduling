@@ -10,8 +10,17 @@ void SRTN::Run()
     vector<Process> tempProcesses = process;
     while (true)
     {
-        UpdateCPUQueue(tempProcesses, time);
-
+        // UpdateCPUQueue(tempProcesses, time);
+        for (int i = 0; i < tempProcesses.size(); i++)
+        {
+            if (tempProcesses[i].ArrivalTime == time)
+            {
+                cpuQueue.push_back(tempProcesses[i]);
+                // ReadyQueue.push_back(tempProcesses[i]);
+                tempProcesses.erase(tempProcesses.begin() + i);
+                --i;
+            }
+        }
         int CurrentID = -1;
 
         if (!cpuQueue.empty())
@@ -23,7 +32,11 @@ void SRTN::Run()
                 if (cpuQueue[i].CPUBurstTime[0] <= cpuQueue[index].CPUBurstTime[0])
                     index = i;
             }
-            swap(cpuQueue[index], cpuQueue[0]);
+            if (index != 0)
+            {
+                cpuQueue.insert(cpuQueue.begin(), cpuQueue[index]);
+                cpuQueue.erase(cpuQueue.begin() + index + 1);
+            }
 
             Process &temp = cpuQueue.front();
             --temp.CPUBurstTime[0];
@@ -42,10 +55,35 @@ void SRTN::Run()
         else
             CPUScheduling.push_back(-1);
 
-        bool flag = UpdateIOQueue(CurrentID, time);
+        // bool flag = UpdateIOQueue(CurrentID, time);
+        if (!ioQueue.empty())
+        {
+            Process &temp = ioQueue.front();
+            if (CurrentID == temp.ID)
+            {
+                ResourceScheduling.push_back(-1);
+                time++;
+                continue;
+            }
+            temp.ResourceBurstTime[0]--;
+            ResourceScheduling.push_back(temp.ID);
+
+            if (temp.ResourceBurstTime[0] <= 0)
+            {
+                temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
+                if (!temp.CPUBurstTime.empty())
+                {
+                    Process p = temp;
+                    // ReadyQueue.push_back(p);
+                    cpuQueue.push_back(p);
+                }
+                ioQueue.erase(ioQueue.begin());
+            }
+        }
+        else
+            ResourceScheduling.push_back(-1);
         if (hasAllProcessesCompleted(tempProcesses))
             break;
-        if (flag)
-            ++time;
+        ++time;
     }
 }

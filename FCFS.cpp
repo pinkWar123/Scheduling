@@ -11,17 +11,15 @@ void FCFS::Run()
     {
         UpdateCPUQueue(tempProcesses, time);
 
-        if(!ReadyQueue.empty())
+        if (!ReadyQueue.empty())
         {
-            SortReadyQueue();
-            for(int i = ReadyQueue.size() -1 ; i >= 0; i--)
+            for (int i = ReadyQueue.size() - 1; i >= 0; i--)
             {
                 cpuQueue.push_back(ReadyQueue[i]);
             }
             ReadyQueue.clear();
         }
 
-        
         int CurrentID = -1;
         if (!cpuQueue.empty())
         {
