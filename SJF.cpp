@@ -29,7 +29,7 @@ void SJF::Run()
         if (!ReadyQueue.empty())
         {
             SortReadyQueue();
-            for (int i = 0; i < ReadyQueue.size(); i++)
+            for (int i = ReadyQueue.size() -1 ; i >= 0; i--)
             {
                 InsertProcessIntoQueue(ReadyQueue[i]);
             }

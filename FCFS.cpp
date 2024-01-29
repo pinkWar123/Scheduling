@@ -14,7 +14,7 @@ void FCFS::Run()
         if(!ReadyQueue.empty())
         {
             SortReadyQueue();
-            for(int i = 0; i < ReadyQueue.size();i++)
+            for(int i = ReadyQueue.size() -1 ; i >= 0; i--)
             {
                 cpuQueue.push_back(ReadyQueue[i]);
             }
