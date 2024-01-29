@@ -9,41 +9,37 @@ void SJF::InsertProcessIntoQueue(Process &other)
         cpuQueue.push_back(other);
         return;
     }
-    bool flag = true;
-    for (int i = 0; i < cpuQueue.size() - 1; i++)
-    {
-        if (other.CPUBurstTime[0] >= cpuQueue[i].CPUBurstTime[0] && other.CPUBurstTime[0] <= cpuQueue[i + 1].CPUBurstTime[0])
-        {
-            flag = false;
-            cpuQueue.insert(cpuQueue.begin() + i + 1, other);
-            break;
-        }
-    }
-    if (flag)
-        cpuQueue.push_back(other);
-}
 
+    auto it = cpuQueue.begin();
+    while (it != cpuQueue.end() && other.CPUBurstTime[0] >= it->CPUBurstTime[0])
+    {
+        ++it;
+    }
+
+    cpuQueue.insert(it, other);
+}
 void SJF::Run()
 {
     int currentTime = 0;
     vector<Process> tempProcesses = process;
     while (true)
     {
-        // Chèn các tiến trình mới đến vào hàng đợi CPU
-        for (int i = 0; i < tempProcesses.size();)
+        UpdateCPUQueue(tempProcesses, currentTime);
+
+        if (!ReadyQueue.empty())
         {
-            if (tempProcesses[i].ArrivalTime == currentTime)
+            SortReadyQueue();
+            for (int i = ReadyQueue.size() -1 ; i >= 0; i--)
             {
-                InsertProcessIntoQueue(tempProcesses[i]);
-                tempProcesses.erase(tempProcesses.begin() + i);
+                InsertProcessIntoQueue(ReadyQueue[i]);
             }
-            else
-                ++i;
+            ReadyQueue.clear();
         }
 
         int CurrentID = -1;
         if (!cpuQueue.empty())
         {
+            UpdateWaitingTime();
             Process &temp = cpuQueue.front();
             CurrentID = temp.ID;
             --temp.CPUBurstTime[0];
@@ -61,32 +57,12 @@ void SJF::Run()
         else
             CPUScheduling.push_back(-1);
 
-        if (!ioQueue.empty())
-        {
-            Process &temp = ioQueue.front();
-            if (CurrentID == temp.ID)
-            {
-                ResourceScheduling.push_back(-1);
-                currentTime++;
-                continue;
-            }
-            --temp.ResourceBurstTime[0];
-            ResourceScheduling.push_back(temp.ID);
-            if (temp.ResourceBurstTime[0] <= 0)
-            {
-                temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
-                if (!temp.CPUBurstTime.empty())
-                {
-                    InsertProcessIntoQueue(temp);
-                }
-                ioQueue.erase(ioQueue.begin());
-            }
-        }
-        else
-            ResourceScheduling.push_back(-1);
+        bool flag = UpdateIOQueue(CurrentID, currentTime);
 
-        if (hasAllProcessesCompleted(tempProcesses))
+        if (hasAllProcessesCompleted(tempProcesses) && ReadyQueue.empty())
             break;
-        currentTime++;
+            
+        if(flag)
+            currentTime++;
     }
 }

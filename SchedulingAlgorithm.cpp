@@ -51,13 +51,26 @@ void Scheduling::UpdateCPUQueue(vector<Process> &tempProcesses, int time)
     {
         if (tempProcesses[i].ArrivalTime == time)
         {
-            cpuQueue.push_back(tempProcesses[i]);
+            //cpuQueue.push_back(tempProcesses[i]);
+            ReadyQueue.push_back(tempProcesses[i]);
             tempProcesses.erase(tempProcesses.begin() + i);
             --i;
         }
     }
 }
-
+void Scheduling::SortReadyQueue()
+{
+    for (int i = 0; i < ReadyQueue.size(); i++)
+    {
+        for (int j = i + 1; j < ReadyQueue.size(); j++)
+        {
+            if (ReadyQueue[i].ArrivalTime < ReadyQueue[j].ArrivalTime)
+            {
+                swap(ReadyQueue[i], ReadyQueue[j]);
+            }
+        }
+    }
+}
 bool Scheduling::UpdateIOQueue(int CurrentID, int &time)
 {
     if (!ioQueue.empty())
@@ -77,7 +90,8 @@ bool Scheduling::UpdateIOQueue(int CurrentID, int &time)
             temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
             if (!temp.CPUBurstTime.empty())
             {
-                cpuQueue.push_back(temp);
+                Process p = temp;
+                ReadyQueue.push_back(p);
             }
             ioQueue.erase(ioQueue.begin());
         }

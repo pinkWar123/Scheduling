@@ -9,26 +9,20 @@ void RoundRobin::Run()
     while (true)
     {
         // Arrival time check and process queueing
-        for (int i = 0; i < tempProcesses.size();)
+        UpdateCPUQueue(tempProcesses, currentTime);
+        if (!ReadyQueue.empty())
         {
-            if (tempProcesses[i].ArrivalTime == currentTime)
+            for (int i = ReadyQueue.size() -1 ; i >= 0; i--)
             {
-                cpuQueue.push_back(tempProcesses[i]);
-                tempProcesses.erase(tempProcesses.begin() + i);
+                cpuQueue.push_back(ReadyQueue[i]);
             }
-            else
-                ++i;
+            ReadyQueue.clear();
         }
-        if (AddIntoQueue)
-        {
-            AddIntoQueue = false;
-            cpuQueue.push_back(cpuQueue.front());
-            cpuQueue.erase(cpuQueue.begin());
-            ;
-        }
+
         int CurrentID = -1;
         if (!cpuQueue.empty())
         {
+            UpdateWaitingTime();
             Process &temp = cpuQueue.front();
             CurrentID = temp.ID;
             ++count;
@@ -45,39 +39,21 @@ void RoundRobin::Run()
             }
             else if (count == time_quantum)
             {
-                AddIntoQueue = true;
+                Process p = temp;
+                ReadyQueue.push_back(p);
+                cpuQueue.erase(cpuQueue.begin());
                 count = 0;
             }
         }
         else
             CPUScheduling.push_back(-1);
 
-        if (!ioQueue.empty())
-        {
-            Process &temp = ioQueue.front();
-            if (CurrentID == temp.ID)
-            {
-                ResourceScheduling.push_back(-1);
-                currentTime++;
-                continue;
-            }
-            --temp.ResourceBurstTime[0];
-            ResourceScheduling.push_back(temp.ID);
-            if (temp.ResourceBurstTime[0] <= 0)
-            {
-                temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
-                if (!temp.CPUBurstTime.empty())
-                    cpuQueue.push_back(temp);
+        bool flag = UpdateIOQueue(CurrentID, currentTime);
 
-                ioQueue.erase(ioQueue.begin());
-            }
-        }
-        else
-            ResourceScheduling.push_back(-1);
-
-        if (hasAllProcessesCompleted(tempProcesses))
+        if (hasAllProcessesCompleted(tempProcesses) && ReadyQueue.empty())
             break;
 
-        currentTime++;
+        if(flag)
+            currentTime++;
     }
 }

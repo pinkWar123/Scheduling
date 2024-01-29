@@ -10,6 +10,16 @@ void FCFS::Run()
     while (true)
     {
         UpdateCPUQueue(tempProcesses, time);
+
+        if (!ReadyQueue.empty())
+        {
+            for (int i = ReadyQueue.size() - 1; i >= 0; i--)
+            {
+                cpuQueue.push_back(ReadyQueue[i]);
+            }
+            ReadyQueue.clear();
+        }
+
         int CurrentID = -1;
         if (!cpuQueue.empty())
         {
@@ -32,7 +42,7 @@ void FCFS::Run()
             CPUScheduling.push_back(-1);
 
         bool flag = UpdateIOQueue(CurrentID, time);
-        if (tempProcesses.empty() && ioQueue.empty() && cpuQueue.empty())
+        if (tempProcesses.empty() && ioQueue.empty() && cpuQueue.empty() && ReadyQueue.empty())
             break;
         if (flag)
             ++time;
