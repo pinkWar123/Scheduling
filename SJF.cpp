@@ -11,6 +11,7 @@ void SJF::InsertProcessIntoQueue(Process &other)
     }
 
     auto it = cpuQueue.begin();
+    it++;
     while (it != cpuQueue.end() && other.CPUBurstTime[0] >= it->CPUBurstTime[0])
     {
         ++it;
@@ -28,8 +29,7 @@ void SJF::Run()
 
         if (!ReadyQueue.empty())
         {
-            SortReadyQueue();
-            for (int i = ReadyQueue.size() -1 ; i >= 0; i--)
+            for (int i = ReadyQueue.size() - 1; i >= 0; i--)
             {
                 InsertProcessIntoQueue(ReadyQueue[i]);
             }
