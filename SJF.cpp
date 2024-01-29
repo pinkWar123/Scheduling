@@ -22,19 +22,9 @@ void SJF::Run()
 {
     int currentTime = 0;
     vector<Process> tempProcesses = process;
-    vector<Process> ReadyQueue;
     while (true)
     {
-        for (int i = 0; i < tempProcesses.size();)
-        {
-            if (tempProcesses[i].ArrivalTime == currentTime)
-            {
-                ReadyQueue.push_back(tempProcesses[i]);
-                tempProcesses.erase(tempProcesses.begin() + i);
-            }
-            else
-                ++i;
-        }
+        UpdateCPUQueue(tempProcesses, currentTime);
 
         if (!ReadyQueue.empty())
         {
@@ -67,33 +57,12 @@ void SJF::Run()
         else
             CPUScheduling.push_back(-1);
 
-        if (!ioQueue.empty())
-        {
-            Process &temp = ioQueue.front();
-            if (CurrentID == temp.ID)
-            {
-                ResourceScheduling.push_back(-1);
-                currentTime++;
-                continue;
-            }
-            --temp.ResourceBurstTime[0];
-            ResourceScheduling.push_back(temp.ID);
-            if (temp.ResourceBurstTime[0] <= 0)
-            {
-                temp.ResourceBurstTime.erase(temp.ResourceBurstTime.begin());
-                if (!temp.CPUBurstTime.empty())
-                {
-                    Process p = temp;
-                    ReadyQueue.push_back(p);
-                }
-                ioQueue.erase(ioQueue.begin());
-            }
-        }
-        else
-            ResourceScheduling.push_back(-1);
+        bool flag = UpdateIOQueue(CurrentID, currentTime);
 
         if (hasAllProcessesCompleted(tempProcesses) && ReadyQueue.empty())
             break;
-        currentTime++;
+            
+        if(flag)
+            currentTime++;
     }
 }
