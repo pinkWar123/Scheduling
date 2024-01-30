@@ -19,7 +19,7 @@ protected:
     vector<int> CPUScheduling;
     vector<int> ResourceScheduling;
 
-    vector<Process> ProcesswaitedintoCPUQueue;
+    vector<Process> TempQueue;
 
 public:
     Scheduling();
@@ -27,7 +27,7 @@ public:
     void CalculateTurnAroundTime();
 
     void UpdateWaitingTime();
-    void takeProcesswithCurrenttime(vector<Process> &p, int time);
+    void TakeProcessWithCurrentTime(vector<Process> &p, int time);
     bool UpdateIOQueue(int currentId, int &time);
     bool hasAllProcessesCompleted(vector<Process> &p);
     //void SortReadyQueue();

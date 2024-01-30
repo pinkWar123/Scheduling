@@ -45,13 +45,13 @@ bool Scheduling::hasAllProcessesCompleted(vector<Process> &p)
     return p.empty() && cpuQueue.empty() && ioQueue.empty();
 }
 
-void Scheduling::takeProcesswithCurrenttime(vector<Process> &tempProcesses, int time)
+void Scheduling::TakeProcessWithCurrentTime(vector<Process> &tempProcesses, int time)
 {
     for (int i = 0; i < tempProcesses.size(); i++)
     {
         if (tempProcesses[i].ArrivalTime == time)
         {
-            ProcesswaitedintoCPUQueue.push_back(tempProcesses[i]);
+            TempQueue.push_back(tempProcesses[i]);
             tempProcesses.erase(tempProcesses.begin() + i);
             --i;
         }
@@ -90,7 +90,7 @@ bool Scheduling::UpdateIOQueue(int CurrentID, int &time)
             if (!temp.CPUBurstTime.empty())
             {
                 Process p = temp;
-                ProcesswaitedintoCPUQueue.push_back(p);
+                TempQueue.push_back(p);
             }
             ioQueue.erase(ioQueue.begin());
         }

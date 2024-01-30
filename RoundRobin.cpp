@@ -9,14 +9,14 @@ void RoundRobin::Run()
     while (true)
     {
         // Arrival time check and process queueing
-        takeProcesswithCurrenttime(tempProcesses, currentTime);
-        if (!ProcesswaitedintoCPUQueue.empty())
+        TakeProcessWithCurrentTime(tempProcesses, currentTime);
+        if (!TempQueue.empty())
         {
-            for (int i = ProcesswaitedintoCPUQueue.size() -1 ; i >= 0; i--)
+            for (int i = TempQueue.size() -1 ; i >= 0; i--)
             {
-                cpuQueue.push_back(ProcesswaitedintoCPUQueue[i]);
+                cpuQueue.push_back(TempQueue[i]);
             }
-            ProcesswaitedintoCPUQueue.clear();
+            TempQueue.clear();
         }
 
         int CurrentID = -1;
@@ -40,7 +40,7 @@ void RoundRobin::Run()
             else if (count == time_quantum)
             {
                 Process p = temp;
-                ProcesswaitedintoCPUQueue.push_back(p);
+                TempQueue.push_back(p);
                 cpuQueue.erase(cpuQueue.begin());
                 count = 0;
             }
@@ -50,7 +50,7 @@ void RoundRobin::Run()
 
         bool flag = UpdateIOQueue(CurrentID, currentTime);
 
-        if (hasAllProcessesCompleted(tempProcesses) && ProcesswaitedintoCPUQueue.empty())
+        if (hasAllProcessesCompleted(tempProcesses) && TempQueue.empty())
             break;
 
         if(flag)
