@@ -5,7 +5,7 @@ Scheduling::Scheduling(vector<Process> p)
 {
     this->process = p;
 }
-void Scheduling::CalculateTime()
+void Scheduling::CalculateTurnAroundTime()
 {
     for (int i = 0; i < process.size(); i++)
     {
@@ -45,32 +45,31 @@ bool Scheduling::hasAllProcessesCompleted(vector<Process> &p)
     return p.empty() && cpuQueue.empty() && ioQueue.empty();
 }
 
-void Scheduling::UpdateCPUQueue(vector<Process> &tempProcesses, int time)
+void Scheduling::takeProcesswithCurrenttime(vector<Process> &tempProcesses, int time)
 {
     for (int i = 0; i < tempProcesses.size(); i++)
     {
         if (tempProcesses[i].ArrivalTime == time)
         {
-            //cpuQueue.push_back(tempProcesses[i]);
-            ReadyQueue.push_back(tempProcesses[i]);
+            ProcesswaitedintoCPUQueue.push_back(tempProcesses[i]);
             tempProcesses.erase(tempProcesses.begin() + i);
             --i;
         }
     }
 }
-void Scheduling::SortReadyQueue()
-{
-    for (int i = 0; i < ReadyQueue.size(); i++)
-    {
-        for (int j = i + 1; j < ReadyQueue.size(); j++)
-        {
-            if (ReadyQueue[i].ArrivalTime < ReadyQueue[j].ArrivalTime)
-            {
-                swap(ReadyQueue[i], ReadyQueue[j]);
-            }
-        }
-    }
-}
+// void Scheduling::SortReadyQueue()
+// {
+//     for (int i = 0; i < ReadyQueue.size(); i++)
+//     {
+//         for (int j = i + 1; j < ReadyQueue.size(); j++)
+//         {
+//             if (ReadyQueue[i].ArrivalTime < ReadyQueue[j].ArrivalTime)
+//             {
+//                 swap(ReadyQueue[i], ReadyQueue[j]);
+//             }
+//         }
+//     }
+// }
 bool Scheduling::UpdateIOQueue(int CurrentID, int &time)
 {
     if (!ioQueue.empty())
@@ -91,7 +90,7 @@ bool Scheduling::UpdateIOQueue(int CurrentID, int &time)
             if (!temp.CPUBurstTime.empty())
             {
                 Process p = temp;
-                ReadyQueue.push_back(p);
+                ProcesswaitedintoCPUQueue.push_back(p);
             }
             ioQueue.erase(ioQueue.begin());
         }
@@ -103,7 +102,7 @@ bool Scheduling::UpdateIOQueue(int CurrentID, int &time)
 
 void Scheduling::WriteIntoFile(const char *filename)
 {
-    CalculateTime();
+    CalculateTurnAroundTime();
     ofstream os(filename);
     for (int i = 0; i < CPUScheduling.size(); i++)
     {

@@ -9,15 +9,15 @@ void FCFS::Run()
     vector<Process> tempProcesses = process;
     while (true)
     {
-        UpdateCPUQueue(tempProcesses, time);
+        takeProcesswithCurrenttime(tempProcesses, time);
 
-        if (!ReadyQueue.empty())
+        if (!ProcesswaitedintoCPUQueue.empty())
         {
-            for (int i = ReadyQueue.size() - 1; i >= 0; i--)
+            for (int i = ProcesswaitedintoCPUQueue.size() - 1; i >= 0; i--)
             {
-                cpuQueue.push_back(ReadyQueue[i]);
+                cpuQueue.push_back(ProcesswaitedintoCPUQueue[i]);
             }
-            ReadyQueue.clear();
+            ProcesswaitedintoCPUQueue.clear();
         }
 
         int CurrentID = -1;
@@ -42,7 +42,7 @@ void FCFS::Run()
             CPUScheduling.push_back(-1);
 
         bool flag = UpdateIOQueue(CurrentID, time);
-        if (tempProcesses.empty() && ioQueue.empty() && cpuQueue.empty() && ReadyQueue.empty())
+        if (tempProcesses.empty() && ioQueue.empty() && cpuQueue.empty() && ProcesswaitedintoCPUQueue.empty())
             break;
         if (flag)
             ++time;

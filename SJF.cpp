@@ -25,15 +25,15 @@ void SJF::Run()
     vector<Process> tempProcesses = process;
     while (true)
     {
-        UpdateCPUQueue(tempProcesses, currentTime);
+        takeProcesswithCurrenttime(tempProcesses, currentTime);
 
-        if (!ReadyQueue.empty())
+        if (!ProcesswaitedintoCPUQueue.empty())
         {
-            for (int i = ReadyQueue.size() - 1; i >= 0; i--)
+            for (int i = ProcesswaitedintoCPUQueue.size() - 1; i >= 0; i--)
             {
-                InsertProcessIntoQueue(ReadyQueue[i]);
+                InsertProcessIntoQueue(ProcesswaitedintoCPUQueue[i]);
             }
-            ReadyQueue.clear();
+            ProcesswaitedintoCPUQueue.clear();
         }
 
         int CurrentID = -1;
@@ -59,7 +59,7 @@ void SJF::Run()
 
         bool flag = UpdateIOQueue(CurrentID, currentTime);
 
-        if (hasAllProcessesCompleted(tempProcesses) && ReadyQueue.empty())
+        if (hasAllProcessesCompleted(tempProcesses) && ProcesswaitedintoCPUQueue.empty())
             break;
             
         if(flag)

@@ -19,18 +19,18 @@ protected:
     vector<int> CPUScheduling;
     vector<int> ResourceScheduling;
 
-    vector<Process> ReadyQueue;
+    vector<Process> ProcesswaitedintoCPUQueue;
 
 public:
     Scheduling();
     Scheduling(vector<Process> p);
-    void CalculateTime();
+    void CalculateTurnAroundTime();
 
     void UpdateWaitingTime();
-    void UpdateCPUQueue(vector<Process> &p, int time);
+    void takeProcesswithCurrenttime(vector<Process> &p, int time);
     bool UpdateIOQueue(int currentId, int &time);
     bool hasAllProcessesCompleted(vector<Process> &p);
-    void SortReadyQueue();
+    //void SortReadyQueue();
 
     void WriteIntoFile(const char *filename);
     virtual void Run() = 0;
