@@ -99,10 +99,22 @@ bool Scheduling::UpdateIOQueue(int CurrentID, int &time)
         ResourceScheduling.push_back(-1);
     return true;
 }
+void RemoveLastHyphen(vector<int> &temp)
+{
+    for (int i = temp.size() - 1; i >= 0; i--)
+    {
+        if (temp[i] != -1)
+            return;
 
+        temp.erase(temp.begin() + i);
+        //++i;
+    }
+}
 void Scheduling::WriteIntoFile(const char *filename)
 {
     CalculateTurnAroundTime();
+    RemoveLastHyphen(CPUScheduling);
+    RemoveLastHyphen(ResourceScheduling);
     ofstream os(filename);
     for (int i = 0; i < CPUScheduling.size(); i++)
     {

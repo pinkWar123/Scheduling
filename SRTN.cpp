@@ -25,7 +25,6 @@ void SRTN::Run()
 
         if (!cpuQueue.empty())
         {
-            UpdateWaitingTime();
             int index = 0;
             for (int i = 1; i < cpuQueue.size(); i++)
             {
@@ -37,6 +36,7 @@ void SRTN::Run()
                 cpuQueue.insert(cpuQueue.begin(), cpuQueue[index]);
                 cpuQueue.erase(cpuQueue.begin() + index + 1);
             }
+            UpdateWaitingTime();
 
             Process &temp = cpuQueue.front();
             --temp.CPUBurstTime[0];
