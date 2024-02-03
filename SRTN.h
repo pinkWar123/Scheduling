@@ -7,4 +7,5 @@ public:
     SRTN();
     SRTN(Data &d);
     void Run() override;
+    void InsertProcessIntoQueue(Process &other);
 };
