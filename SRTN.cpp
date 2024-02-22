@@ -25,18 +25,70 @@ void SRTN::Run()
 
         if (!cpuQueue.empty())
         {
-            UpdateWaitingTime();
             int index = 0;
-            for (int i = 1; i < cpuQueue.size(); i++)
+            for (int i = 0; i < cpuQueue.size(); i++)
             {
                 if (cpuQueue[i].CPUBurstTime[0] <= cpuQueue[index].CPUBurstTime[0])
                     index = i;
             }
-            if (index != 0)
+            vector<int> minIndexes;
+            for (int i = 0; i < cpuQueue.size(); i++)
             {
-                cpuQueue.insert(cpuQueue.begin(), cpuQueue[index]);
-                cpuQueue.erase(cpuQueue.begin() + index + 1);
+                if (cpuQueue[i].CPUBurstTime[0] == cpuQueue[index].CPUBurstTime[0])
+                    minIndexes.push_back(i);
             }
+            int minIndex = 0;
+            vector<int> hasAlreadyUsedCpuIndexes;
+            vector<int> hasNotAlreadyUsedCpuIndexes;
+            for (int i = 0; i < minIndexes.size(); i++)
+            {
+                int index = minIndexes[i];
+                bool flag = true;
+                for (int j = 0; j < CPUScheduling.size(); j++)
+                {
+                    if (CPUScheduling[j] == cpuQueue[index].ID)
+                    {
+                        hasAlreadyUsedCpuIndexes.push_back(index);
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag)
+                    hasNotAlreadyUsedCpuIndexes.push_back(index);
+            }
+            cout << hasNotAlreadyUsedCpuIndexes.size() << endl;
+            if (!hasNotAlreadyUsedCpuIndexes.empty())
+            {
+                minIndex = hasNotAlreadyUsedCpuIndexes.front();
+            }
+            else
+            {
+                vector<int> history;
+                for (int i = 0; i < hasAlreadyUsedCpuIndexes.size(); i++)
+                {
+                    for (int j = CPUScheduling.size() - 1; j >= 0; j--)
+                    {
+                        if (CPUScheduling[j] == cpuQueue[hasAlreadyUsedCpuIndexes[i]].ID)
+                        {
+                            history.push_back(j);
+                            break;
+                        }
+                    }
+                }
+                for (int i = 0; i < history.size(); i++)
+                {
+                    if (history[i] < history[minIndex])
+                        minIndex = i;
+                }
+                minIndex = hasAlreadyUsedCpuIndexes[minIndex];
+            }
+
+            if (minIndex != 0)
+            {
+                cpuQueue.insert(cpuQueue.begin(), cpuQueue[minIndex]);
+                cpuQueue.erase(cpuQueue.begin() + minIndex + 1);
+            }
+            UpdateWaitingTime();
 
             Process &temp = cpuQueue.front();
             --temp.CPUBurstTime[0];
